@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Digital Vote</title>
+
+  <style>
+    :root{
+      --blue1:#0b4f8a;
+      --blue2:#2b9bd7;
+      --card:#ffffff;
+      --muted:#6b778c;
+      --bg:#eef5fc;
+      --radius:12px;
+    }
+    *{box-sizing:border-box;font-family:Inter, Segoe UI, Arial, sans-serif}
+
+    body{
+      margin:0;
+      background:var(--bg);
+    }
+
+    /* NAVBAR */
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:18px 40px;
+      background:white;
+      box-shadow:0 2px 6px rgba(0,0,0,0.08);
+    }
+    header .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+    header h1{
+      margin:0;
+      font-size:26px;
+      font-weight:600;
+      color:var(--blue1);
+    }
+    header small{
+      color:var(--muted);
+      font-size:12px;
+    }
+    header button{
+      padding:10px 20px;
+      margin-left:10px;
+      border:none;
+      border-radius:8px;
+      cursor:pointer;
+      font-weight:600;
+    }
+    .login-btn{
+      background:#fff;
+      border:2px solid var(--blue1);
+      color:var(--blue1);
+    }
+    .reg-btn{
+      background:var(--blue1);
+      color:white;
+    }
+
+    /* MAIN LAYOUT */
+    .main{
+      display:flex;
+      gap:30px;
+      padding:40px;
+      max-width:1200px;
+      margin:auto;
+    }
+    .left{
+      flex:1;
+      background:linear-gradient(135deg,var(--blue1),var(--blue2));
+      color:white;
+      padding:40px;
+      border-radius:var(--radius);
+    }
+    .left h2{
+      font-size:42px;
+      margin-bottom:15px;
+    }
+
+    /* LOGIN CARD */
+    .right{
+      width:380px;
+      background:white;
+      padding:30px;
+      border-radius:var(--radius);
+      box-shadow:0 3px 8px rgba(0,0,0,0.1);
+      text-align:center;
+    }
+    .right h3{
+      margin-top:0;
+      font-size:26px;
+      color:var(--blue1);
+    }
+    .finger{
+      width:130px;
+      height: 160px;
+      border-radius: 20px;
+      margin:0 auto 20px auto;
+      display:block;
+    }
+
+    .field{
+      width:100%;
+      padding:14px;
+      font-size:16px;
+      border:1px solid #d0d8e0;
+      border-radius:var(--radius);
+      margin-bottom:18px;
+    }
+
+    .right button{
+      padding:14px 20px;
+      width:70%;
+      border:none;
+      border-radius:var(--radius);
+      background:linear-gradient(135deg,var(--blue1),var(--blue2));
+      color:white;
+      font-size:16px;
+      font-weight:600;
+      cursor:pointer;
+      display:block;
+      margin:10px auto 0 auto;
+    }
+
+    /* CONTENT PAGES */
+    .page{
+      max-width:900px;
+      background:white;
+      padding:25px;
+      border-radius:12px;
+      margin:30px auto;
+      box-shadow:0 5px 16px rgba(0,0,0,0.08);
+    }
+    .hidden{display:none}
+  </style>
+</head>
+<body>
+
+<!-- NAVBAR -->
+<header>
+  <div class="brand">
+    <img src="https://cdn-icons-png.flaticon.com/512/1827/1827504.png" width="48">
+    <div>
+      <h1>Digital Vote</h1>
+      <small>Online Voting Portal</small>
+    </div>
+  </div>
+
+  <div>
+    <button class="login-btn" onclick="show('loginPage')">User Login</button>
+    <button class="reg-btn" onclick="show('registerPage')">User Registration</button>
+  </div>
+</header>
+
+<!-- MAIN HERO SECTION -->
+<div class="main">
+  <div class="left">
+    <h2>Secure Online Voting Portal</h2>
+    <p>Vote securely from anywhere. College project demo.</p>
+    <p style="margin-top:25px;font-size:18px;">Interface Preview</p>
+  </div>
+
+  <!-- Login Window -->
+  <div class="right">
+    <h3>Welcome</h3>
+
+    <img class="finger" src="./hand-with-voting-sign-of-india-vector-2041699.jpg">
+
+    <input id="homeId" maxlength="12" class="field" placeholder="Enter Voter ID / Aadhaar" />
+    <button onclick="goLogin()">Login with OTP</button>
+  </div>
+</div>
+
+<!-- REGISTRATION PAGE -->
+<div id="registerPage" class="page hidden">
+  <h3>Voter Registration</h3>
+
+  <label>Full Name</label>
+  <input id="r_name" class="field">
+
+  <label>Voter / Aadhaar ID</label>
+  <input id="r_id" class="field" maxlength="12" oninput="this.value=this.value.toUpperCase()">
+
+  <label>Age</label>
+  <input id="r_age" type="number" class="field">
+
+  <label>District</label>
+  <input id="r_district" class="field">
+
+  <button class="reg-btn" onclick="registerVoter()" style="margin-top:15px">Submit</button>
+  <p id="regMsg" style="color:green;margin-top:10px"></p>
+</div>
+
+<!-- LOGIN PAGE -->
+<div id="loginPage" class="page hidden">
+  <h3>User Login</h3>
+
+  <label>Aadhaar / Voter ID</label>
+  <input id="l_id" class="field" maxlength="12" oninput="this.value=this.value.toUpperCase()" placeholder="Aadhaar (12 digits) / Voter ID (10 chars)">
+
+
+  <label>OTP</label>
+  <input id="l_otp" class="field" placeholder="Use 123456">
+
+  <button class="login-btn" onclick="loginVoter()">Login</button>
+
+  <p id="loginMsg" style="color:green;margin-top:10px"></p>
+</div>
+
+<!-- VOTE PAGE -->
+<div id="votePage" class="page hidden">
+  <h3>Cast Your Vote</h3>
+  <div id="candidateList"></div>
+  <button class="reg-btn" style="margin-top:15px" onclick="submitVote()">Submit Vote</button>
+  <p id="voteMsg" style="color:green;margin-top:10px"></p>
+</div>
+
+<!-- RESULT PAGE -->
+<div id="resultPage" class="page hidden">
+  <h3>Live Results</h3>
+  <div id="results"></div>
+</div>
+
+<script>
+  function show(id){
+    ["registerPage","loginPage","votePage","resultPage"].forEach(p =>
+      document.getElementById(p).classList.add("hidden")
+    );
+    document.getElementById(id).classList.remove("hidden");
+    window.scrollTo(0,150);
+  }
+
+  function goLogin(){
+    document.getElementById("l_id").value =
+      document.getElementById("homeId").value;
+    show("loginPage");
+  }
+
+  const DB = {
+    voters : "dv_voters",
+    votes  : "dv_votes"
+  };
+
+  function load(key, def){
+    try { return JSON.parse(localStorage.getItem(key)) || def; }
+    catch { return def; }
+  }
+  function save(key,val){
+    localStorage.setItem(key, JSON.stringify(val));
+  }
+
+/* ---------- ID VALIDATION ---------- */
+
+function isValidAadhaar(a) {
+  return /^[0-9]{12}$/.test(a);
+}
+
+function isValidVoterID(v) {
+  return /^[A-Z]{3}[0-9]{7}$/.test(v.toUpperCase());
+}
+
+
+/* ---------- REGISTRATION ---------- */
+function registerVoter(){
+  let name = r_name.value.trim();
+  let id   = r_id.value.trim().toUpperCase();
+  let age  = r_age.value.trim();
+  let dist = r_district.value.trim();
+
+  // Check Empty
+  if(!name || !id || !age || !dist){
+    regMsg.textContent = "❌ All fields are required!";
+    regMsg.style.color = "red";
+    return;
+  }
+
+  // Aadhaar OR Voter ID validation
+  if(!isValidAadhaar(id) && !isValidVoterID(id)){
+    regMsg.textContent = "❌ Enter valid Aadhaar (12 digits) OR Voter ID (ABC1234567)";
+    regMsg.style.color = "red";
+    return;
+  }
+
+  // Load saved voters
+  let voters = load(DB.voters, []);
+
+  // Check duplicate
+  if(voters.find(v => v.id === id)){
+    regMsg.textContent = "❌ Already Registered!";
+    regMsg.style.color = "red";
+    return;
+  }
+
+  // Save voter
+  voters.push({
+    name: name,
+    id: id,
+    age: age,
+    district: dist
+  });
+
+  save(DB.voters, voters);
+
+  regMsg.textContent = "✔ Registration Successful!";
+  regMsg.style.color = "green";
+
+  // Clear fields
+  r_name.value = "";
+  r_id.value = "";
+  r_age.value = "";
+  r_district.value = "";
+}
+
+/* ---------- LOGIN ---------- */
+function loginVoter(){
+  let id  = l_id.value.trim().toUpperCase();
+  let otp = l_otp.value.trim();
+
+  // Format validation
+  if(!isValidAadhaar(id) && !isValidVoterID(id)){
+    loginMsg.textContent = "❌ Invalid Aadhaar or Voter ID Format!";
+    loginMsg.style.color = "red";
+    return;
+  }
+
+  let voters = load(DB.voters, []);
+
+  // Check registration
+  if(!voters.find(v => v.id === id)){
+    loginMsg.textContent = "❌ Voter Not Found!";
+    loginMsg.style.color = "red";
+    return;
+  }
+
+  if(otp !== "123456"){
+    loginMsg.textContent = "❌ Invalid OTP!";
+    loginMsg.style.color = "red";
+    return;
+  }
+
+  sessionStorage.setItem("current", id);
+
+  loginMsg.textContent = "✔ Login Successful!";
+  loginMsg.style.color = "green";
+
+  show("votePage");
+  loadCandidates();
+}
+
+
+/* ---------- CANDIDATES ---------- */
+  const C = [
+    {id:"c1", name:"Candidate A", party:"Alpha"},
+    {id:"c2", name:"Candidate B", party:"Beta"},
+    {id:"c3", name:"Candidate C", party:"Gamma"}
+  ];
+
+  function loadCandidates(){
+    candidateList.innerHTML = "";
+    C.forEach(c => {
+      candidateList.innerHTML += `
+        <div style="border:1px solid #ddd;padding:12px;border-radius:8px;margin-top:10px">
+          <b>${c.name}</b> <small style="color:#777">${c.party}</small>
+          <span style="float:right">
+            <input type="radio" name="cand" value="${c.id}">
+          </span>
+        </div>`;
+    });
+  }
+
+  /* ---------- SUBMIT VOTE ---------- */
+  function submitVote(){
+    let id = sessionStorage.getItem("current");
+    if(!id){ alert("Login first!"); return; }
+
+    let sel = document.querySelector("input[name=cand]:checked");
+    if(!sel){
+      voteMsg.textContent = "Select a candidate!";
+      return;
+    }
+
+    let votes = load(DB.votes, {});
+    if(votes[id]){
+      voteMsg.textContent = "Already Voted!";
+      return;
+    }
+
+    votes[id] = sel.value;
+    save(DB.votes, votes);
+
+    voteMsg.textContent = "Vote Submitted!";
+    show("resultPage");
+    renderResults();
+  }
+
+  /* ---------- RESULTS ---------- */
+  function renderResults(){
+    let votes = load(DB.votes, {});
+    let tally = {c1:0,c2:0,c3:0};
+
+    Object.values(votes).forEach(v=>{
+      tally[v] = (tally[v]||0)+1;
+    });
+
+    results.innerHTML = "";
+    C.forEach(c=>{
+      results.innerHTML += `
+        <div style="padding:12px;border-bottom:1px solid #ddd">
+          <b>${c.name}</b> —
+          <span>${tally[c.id]} votes</span>
+        </div>`;
+    });
+  }
+</script>
+
+</body>
+</html>
